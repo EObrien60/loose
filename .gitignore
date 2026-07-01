@@ -10,4 +10,6 @@ dist
 # test + tooling artifacts
 playwright-report/
 test-results/
+.playwright-mcp/
+*.png
 .DS_Store
