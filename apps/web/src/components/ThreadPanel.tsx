@@ -1,3 +1,4 @@
+import { IoClose } from "react-icons/io5";
 import type { Reaction } from "@loose/core";
 import type { LooseState, UiMessage } from "../state";
 import { MessageRow } from "./MessageRow";
@@ -33,7 +34,7 @@ export function ThreadPanel({
       <div className="thread-head">
         <strong>Thread</strong>
         <button className="icon-btn" onClick={onClose}>
-          ×
+          <IoClose />
         </button>
       </div>
       <div className="thread-body">

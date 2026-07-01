@@ -1451,3 +1451,56 @@ header .search input {
   background: #34363d;
   background-clip: padding-box;
 }
+
+/* — Ionicons: inherit currentColor, size & align consistently — */
+.icon-btn,
+.composer-icon {
+  display: inline-grid;
+  place-items: center;
+}
+.icon-btn svg {
+  font-size: 18px;
+}
+.composer-icon svg {
+  font-size: 19px;
+}
+.chan-glyph,
+.hash,
+.attach-icon,
+.huddle-mic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.chan-glyph svg {
+  font-size: 13px;
+}
+.hash svg {
+  font-size: 15px;
+}
+.huddle-btn,
+.huddle-ctl,
+.huddle-title,
+.thread-link,
+.react-add-btn,
+.msg-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.huddle-title svg {
+  font-size: 16px;
+}
+.react-add-btn svg,
+.msg-action-btn svg {
+  font-size: 15px;
+}
+.attach-icon svg {
+  font-size: 22px;
+  color: var(--muted);
+}
+button svg,
+a svg,
+span svg {
+  flex: none;
+}

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { IoHeadset, IoMic, IoMicOff, IoVideocam, IoVideocamOff } from "react-icons/io5";
 import {
   Room,
   RoomEvent,
@@ -173,7 +174,7 @@ export function HuddlePanel({
   return (
     <div className="huddle-panel">
       <div className="huddle-bar">
-        <span className="huddle-title">🎧 Huddle · {channelName}</span>
+        <span className="huddle-title"><IoHeadset /> Huddle · {channelName}</span>
         <span className="huddle-status">
           {status.kind === "connecting" && "Connecting…"}
           {status.kind === "connected" && `${rosterEntries.length} in huddle`}
@@ -189,7 +190,15 @@ export function HuddlePanel({
             disabled={status.kind !== "connected"}
             title={micOn ? "Mute" : "Unmute"}
           >
-            {micOn ? "🎙️ Mic" : "🔇 Muted"}
+            {micOn ? (
+              <>
+                <IoMic /> Mic
+              </>
+            ) : (
+              <>
+                <IoMicOff /> Muted
+              </>
+            )}
           </button>
           <button
             className={`huddle-ctl ${camOn ? "on" : "off"}`}
@@ -197,7 +206,15 @@ export function HuddlePanel({
             disabled={status.kind !== "connected"}
             title={camOn ? "Turn camera off" : "Turn camera on"}
           >
-            {camOn ? "📹 Cam" : "📷 Cam off"}
+            {camOn ? (
+              <>
+                <IoVideocam /> Cam
+              </>
+            ) : (
+              <>
+                <IoVideocamOff /> Cam off
+              </>
+            )}
           </button>
           <button className="huddle-ctl leave" onClick={leave} title="Leave huddle">
             Leave
@@ -263,7 +280,7 @@ function ParticipantTile({
       )}
       <div className="huddle-tile-foot">
         <span className="huddle-mic">
-          {hasMedia ? (micEnabled ? "🎙️" : "🔇") : "•"}
+          {hasMedia ? micEnabled ? <IoMic /> : <IoMicOff /> : "•"}
         </span>
         <span className="huddle-name">
           {name}

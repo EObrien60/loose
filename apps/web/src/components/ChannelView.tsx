@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { IoHeadsetOutline, IoLockClosed } from "react-icons/io5";
 import type { Channel, Message, Reaction } from "@loose/core";
 import type { LooseState, UiMessage } from "../state";
 import { api } from "../lib/api";
@@ -144,7 +145,7 @@ export function ChannelView({
   return (
     <section className="channel">
       <header>
-        {!isDm && <span className="hash">{channel.kind === "private" ? "🔒" : "#"}</span>}
+        {!isDm && <span className="hash">{channel.kind === "private" ? <IoLockClosed /> : "#"}</span>}
         <span className="chan-title">{channel.name}</span>
         {channel.topic && <span className="topic">{channel.topic}</span>}
         {inThisHuddle ? (
@@ -153,7 +154,7 @@ export function ChannelView({
             onClick={() => state.leaveHuddle(channel.id)}
             title="Leave huddle"
           >
-            🎧 In huddle
+            <IoHeadsetOutline /> In huddle
           </button>
         ) : huddleActiveElsewhere ? (
           <button
@@ -161,7 +162,7 @@ export function ChannelView({
             onClick={() => state.joinHuddle(channel.id)}
             title="Join the huddle in progress"
           >
-            🎧 Huddle in progress — Join
+            <IoHeadsetOutline /> Huddle in progress — Join
           </button>
         ) : (
           <button
@@ -169,7 +170,7 @@ export function ChannelView({
             onClick={() => state.joinHuddle(channel.id)}
             title="Start a huddle"
           >
-            🎧 Huddle
+            <IoHeadsetOutline /> Huddle
           </button>
         )}
         <form className="search" onSubmit={runSearch}>

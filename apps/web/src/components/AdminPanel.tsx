@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { IoClose } from "react-icons/io5";
 import {
   api,
   type WorkspaceInfo,
@@ -122,7 +123,7 @@ export function AdminPanel({
         <div className="modal-head">
           <strong>Workspace settings</strong>
           <button className="icon-btn" onClick={onClose}>
-            ×
+            <IoClose />
           </button>
         </div>
 

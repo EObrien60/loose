@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { IoPencil, IoTrashOutline, IoHappyOutline, IoChatbubbleOutline } from "react-icons/io5";
 import type { Reaction } from "@loose/core";
 import type { UiMessage } from "../state";
 import { COMMON_EMOJIS } from "../state";
@@ -78,7 +79,7 @@ export function MessageRow({
                   setEditing(true);
                 }}
               >
-                ✎
+                <IoPencil />
               </button>
             )}
             {onDelete && (
@@ -89,7 +90,7 @@ export function MessageRow({
                   if (window.confirm("Delete this message?")) onDelete(message.id);
                 }}
               >
-                🗑
+                <IoTrashOutline />
               </button>
             )}
           </span>
@@ -152,7 +153,7 @@ export function MessageRow({
             title="Add reaction"
             onClick={() => setShowPicker((s) => !s)}
           >
-            🙂+
+            <IoHappyOutline />
           </button>
           {showPicker && (
             <div className="emoji-pop">
@@ -173,7 +174,8 @@ export function MessageRow({
 
         {onOpenThread && (
           <button className="thread-link" onClick={() => onOpenThread(message.id)}>
-            {replyCount > 0 ? `💬 ${replyCount} ${replyCount === 1 ? "reply" : "replies"}` : "Reply"}
+            <IoChatbubbleOutline />
+            {replyCount > 0 ? `${replyCount} ${replyCount === 1 ? "reply" : "replies"}` : "Reply"}
           </button>
         )}
       </div>

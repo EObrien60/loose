@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { IoSettingsOutline, IoAdd, IoLockClosed, IoClose } from "react-icons/io5";
 import type { User, Channel } from "@loose/core";
 import { api, type WorkspaceInfo, type WorkspaceRole } from "../lib/api";
 import type { LooseState } from "../state";
@@ -96,7 +97,7 @@ export function Sidebar({
             title="Workspace settings"
             onClick={() => setShowAdmin(true)}
           >
-            ⚙
+            <IoSettingsOutline />
           </button>
         )}
         <span className={`conn-dot ${state.conn.status}`} title={state.conn.status} />
@@ -107,7 +108,7 @@ export function Sidebar({
           <div className="section-head">
             <span>Channels</span>
             <button className="icon-btn" title="Create channel" onClick={createChannel}>
-              +
+              <IoAdd />
             </button>
           </div>
           {rooms.map((c) => (
@@ -116,7 +117,7 @@ export function Sidebar({
               className={`chan-item ${c.id === activeId ? "active" : ""}`}
               onClick={() => onSelect(c.id)}
             >
-              <span className="chan-glyph">{c.kind === "private" ? "🔒" : "#"}</span>
+              <span className="chan-glyph">{c.kind === "private" ? <IoLockClosed /> : "#"}</span>
               <span className="chan-name">{c.name}</span>
               {hasUnread(c.id) && <span className="unread-dot" />}
             </button>
@@ -128,7 +129,7 @@ export function Sidebar({
           <div className="section-head">
             <span>Direct Messages</span>
             <button className="icon-btn" title="New DM" onClick={openDmPicker}>
-              ＋
+              <IoAdd />
             </button>
           </div>
           {dms.map((c) => (
@@ -163,7 +164,7 @@ export function Sidebar({
             <div className="modal-head">
               <strong>Start a direct message</strong>
               <button className="icon-btn" onClick={() => setShowDmPicker(false)}>
-                ×
+                <IoClose />
               </button>
             </div>
             {usersErr && <div className="auth-error">{usersErr}</div>}

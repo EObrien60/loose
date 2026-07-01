@@ -1,3 +1,4 @@
+import { IoDocumentOutline } from "react-icons/io5";
 import type { Attachment } from "@loose/core";
 import { fileUrl } from "../lib/api";
 
@@ -38,7 +39,7 @@ export function Attachments({ attachments }: { attachments: Attachment[] }) {
             download={a.name}
             className="attach-chip"
           >
-            <span className="attach-icon">📄</span>
+            <span className="attach-icon"><IoDocumentOutline /></span>
             <span className="attach-meta">
               <span className="attach-name">{a.name}</span>
               <span className="attach-size">{humanSize(a.size)}</span>

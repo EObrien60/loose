@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { IoAttach, IoSparklesOutline } from "react-icons/io5";
 
 export function Composer({
   placeholder,
@@ -64,7 +65,7 @@ export function Composer({
             disabled={uploading}
             onClick={() => fileRef.current?.click()}
           >
-            {uploading ? "…" : "📎"}
+            {uploading ? "…" : <IoAttach />}
           </button>
         </>
       )}
@@ -88,7 +89,7 @@ export function Composer({
           title="Ask Assistant"
           onClick={ask}
         >
-          ✨
+          <IoSparklesOutline />
         </button>
       )}
       <button onClick={submit}>Send</button>
