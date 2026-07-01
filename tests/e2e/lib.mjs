@@ -1,6 +1,11 @@
 import { spawn } from "node:child_process";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { WebSocket } from "ws";
+
+// Node <22 has no global WebSocket; the `ws` package provides it. Expose it globally so
+// every suite (and this module) can use `WebSocket` uniformly regardless of Node version.
+if (!globalThis.WebSocket) globalThis.WebSocket = WebSocket;
 
 export const REPO = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 export const HTTP = "http://localhost:8787";
