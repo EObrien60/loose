@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
+      - run: pnpm -r typecheck
+      - run: pnpm --filter @loose/web build
+      - run: pnpm --filter @loose/desktop build
+      - name: e2e (memory · pglite · fully-swapped)
+        run: pnpm test:e2e
+
+  e2e-postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: loose
+          POSTGRES_PASSWORD: loose
+          POSTGRES_DB: loose
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U loose"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
+      # The Postgres config of the matrix points at the real service (migrations auto-apply on boot).
+      - name: e2e against real Postgres
+        run: pnpm test:e2e
+        env:
+          LOOSE_E2E_PG_URL: postgres://loose:loose@localhost:5432/loose
