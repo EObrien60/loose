@@ -126,6 +126,15 @@ export const api = {
   me() {
     return request<{ user: User }>("/auth/me", { auth: true });
   },
+  updateProfile(body: { displayName: string }) {
+    return request<{ user: User }>("/auth/me", { method: "PATCH", body, auth: true });
+  },
+  changePassword(body: { currentPassword: string; newPassword: string }) {
+    return request<{ ok: true }>("/auth/password", { method: "POST", body, auth: true });
+  },
+  renameWorkspace(name: string) {
+    return request<WorkspaceResult>("/workspace", { method: "POST", body: { name }, auth: true });
+  },
   users() {
     return request<{ users: User[] }>("/users", { auth: true });
   },

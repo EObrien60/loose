@@ -44,11 +44,14 @@ export interface Store {
   systemUser(): Promise<StoredUser>;
   getUser(id: string): Promise<StoredUser | null>;
   listHumans(workspaceId: string): Promise<UserRecord[]>;
+  /** Update editable profile fields; returns the updated user (or null if missing). */
+  updateUserProfile(userId: string, patch: { displayName?: string }): Promise<StoredUser | null>;
 
   // ── workspaces / tenancy ──
   createWorkspace(name: string, slug: string): Promise<Workspace>;
   getWorkspace(id: string): Promise<Workspace | null>;
   getWorkspaceBySlug(slug: string): Promise<Workspace | null>;
+  renameWorkspace(workspaceId: string, name: string): Promise<void>;
   setPlan(workspaceId: string, plan: string, seatLimit: number): Promise<void>;
   setStripeCustomer(workspaceId: string, customerId: string): Promise<void>;
 

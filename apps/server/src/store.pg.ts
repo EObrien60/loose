@@ -380,6 +380,14 @@ export class PgStore implements Store {
   private toWorkspace(r: typeof workspaces.$inferSelect): Workspace {
     return { id: r.id, name: r.name, slug: r.slug, plan: r.plan, seatLimit: r.seatLimit, stripeCustomerId: r.stripeCustomerId };
   }
+  async updateUserProfile(userId: string, patch: { displayName?: string }): Promise<StoredUser | null> {
+    const name = patch.displayName?.trim();
+    if (name) await this.db.update(usersTable).set({ displayName: name }).where(eq(usersTable.id, userId));
+    return this.getUser(userId);
+  }
+  async renameWorkspace(workspaceId: string, name: string): Promise<void> {
+    await this.db.update(workspaces).set({ name }).where(eq(workspaces.id, workspaceId));
+  }
   async createWorkspace(name: string, slug: string): Promise<Workspace> {
     const id = `w_${nanoid(8)}`;
     const seatLimit = Number(process.env.WORKSPACE_SEAT_LIMIT) || 50;

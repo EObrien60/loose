@@ -257,6 +257,17 @@ export class MemoryStore implements Store {
     for (const ch of ["general", "random"]) this.seedChannel(id, ch);
     return ws;
   }
+  async updateUserProfile(userId: string, patch: { displayName?: string }): Promise<StoredUser | null> {
+    const u = this.usersById.get(userId);
+    if (!u) return null;
+    const name = patch.displayName?.trim();
+    if (name) u.displayName = name;
+    return u as StoredUser;
+  }
+  async renameWorkspace(workspaceId: string, name: string): Promise<void> {
+    const ws = this.workspacesById.get(workspaceId);
+    if (ws) ws.name = name;
+  }
   async getWorkspace(id: string): Promise<Workspace | null> {
     return this.workspacesById.get(id) ?? null;
   }

@@ -69,6 +69,12 @@ export interface AuthProvider {
   createSession(userId: string): Promise<Session>;
   verifySession(token: string): Promise<Session | null>;
   revokeSession(token: string): Promise<void>;
+  /** Change a user's password (strategies that own credentials). */
+  changePassword?(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<{ ok: true } | { ok: false; error: string }>;
   onUserProvision?(profile: ExternalProfile): Promise<UserRecord>;
 }
 
@@ -161,5 +167,19 @@ export class LocalAuthProvider implements AuthProvider {
 
   async revokeSession(token: string): Promise<void> {
     await this.sessions.delete(token);
+  }
+
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<{ ok: true } | { ok: false; error: string }> {
+    if (!newPassword || newPassword.length < 6)
+      return { ok: false, error: "new password must be at least 6 characters" };
+    const cred = await this.creds.get(userId);
+    if (!cred || cred.type !== "password" || !(await this.hasher.verify(currentPassword, cred.secretHash)))
+      return { ok: false, error: "current password is incorrect" };
+    await this.creds.set({ userId, type: "password", secretHash: await this.hasher.hash(newPassword) });
+    return { ok: true };
   }
 }

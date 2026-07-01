@@ -96,6 +96,32 @@ export function registerHttp(app: FastifyInstance, p: Providers) {
     return { user: toUser(user) };
   });
 
+  // Update the signed-in user's own profile (display name).
+  app.patch("/auth/me", async (req, reply) => {
+    const user = await userFromReq(req);
+    if (!user) return reply.code(401).send({ error: "unauthorized" });
+    const b = (req.body ?? {}) as Record<string, unknown>;
+    const displayName = typeof b.displayName === "string" ? b.displayName.trim() : "";
+    if (!displayName) return reply.code(400).send({ error: "display name required" });
+    if (displayName.length > 80) return reply.code(400).send({ error: "display name too long" });
+    const updated = await store.updateUserProfile(user.id, { displayName });
+    if (!updated) return reply.code(404).send({ error: "user not found" });
+    return { user: toUser(updated) };
+  });
+
+  // Change the signed-in user's password (local auth only).
+  app.post("/auth/password", async (req, reply) => {
+    const user = await userFromReq(req);
+    if (!user) return reply.code(401).send({ error: "unauthorized" });
+    if (!auth.changePassword) return reply.code(400).send({ error: "password change not supported" });
+    const b = (req.body ?? {}) as Record<string, unknown>;
+    const current = typeof b.currentPassword === "string" ? b.currentPassword : "";
+    const next = typeof b.newPassword === "string" ? b.newPassword : "";
+    const result = await auth.changePassword(user.id, current, next);
+    if (!result.ok) return reply.code(400).send({ error: result.error });
+    return { ok: true };
+  });
+
   app.get("/users", async (req, reply) => {
     const user = await userFromReq(req);
     if (!user) return reply.code(401).send({ error: "unauthorized" });
@@ -210,6 +236,22 @@ export function registerHttp(app: FastifyInstance, p: Providers) {
     return {
       workspace: { id: ws.id, name: ws.name, slug: ws.slug, plan: ws.plan, seatLimit: ws.seatLimit, memberCount: await store.memberCount(ws.id) },
       role: await store.getRole(ws.id, user.id),
+    };
+  });
+
+  // Rename the workspace (owner/admin).
+  app.post("/workspace", async (req, reply) => {
+    const ctx = await requireRole(req, reply, ["owner", "admin"]);
+    if (!ctx) return;
+    const name = ((req.body as { name?: string })?.name ?? "").trim();
+    if (!name) return reply.code(400).send({ error: "name required" });
+    if (name.length > 60) return reply.code(400).send({ error: "name too long" });
+    await store.renameWorkspace(ctx.user.workspaceId, name);
+    const ws = await store.getWorkspace(ctx.user.workspaceId);
+    if (!ws) return reply.code(404).send({ error: "workspace not found" });
+    return {
+      workspace: { id: ws.id, name: ws.name, slug: ws.slug, plan: ws.plan, seatLimit: ws.seatLimit, memberCount: await store.memberCount(ws.id) },
+      role: ctx.role,
     };
   });
 
