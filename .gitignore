@@ -1,0 +1,13 @@
+node_modules
+dist
+.env
+.turbo
+*.log
+.loose-files/
+.loosedb/
+*.loosedb
+
+# test + tooling artifacts
+playwright-report/
+test-results/
+.DS_Store
