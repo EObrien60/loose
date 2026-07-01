@@ -4,6 +4,7 @@ import type { Reaction } from "@loose/core";
 import type { UiMessage } from "../state";
 import { COMMON_EMOJIS } from "../state";
 import { relativeTime } from "../lib/util";
+import { renderWithMentions } from "../lib/mentions";
 import { Blocks } from "./Blocks";
 import { Attachments } from "./Attachments";
 
@@ -11,6 +12,8 @@ export function MessageRow({
   message,
   reactions,
   meId,
+  meName,
+  mentionNames = [],
   replyCount,
   onToggleReaction,
   onOpenThread,
@@ -20,6 +23,8 @@ export function MessageRow({
   message: UiMessage;
   reactions: Reaction[];
   meId: string;
+  meName?: string;
+  mentionNames?: string[];
   replyCount: number;
   onToggleReaction: (messageId: string, emoji: string) => void;
   onOpenThread?: (messageId: string) => void;
@@ -122,7 +127,7 @@ export function MessageRow({
       ) : (
         message.body && (
           <div className="body">
-            {message.body}
+            {renderWithMentions(message.body, mentionNames, meName)}
             {isEdited && <span className="edited-marker"> (edited)</span>}
           </div>
         )

@@ -1,5 +1,6 @@
+import { useMemo } from "react";
 import { IoClose } from "react-icons/io5";
-import type { Reaction } from "@loose/core";
+import type { Reaction, User } from "@loose/core";
 import type { LooseState, UiMessage } from "../state";
 import { MessageRow } from "./MessageRow";
 import { Composer } from "./Composer";
@@ -9,13 +10,17 @@ export function ThreadPanel({
   state,
   channelId,
   rootId,
+  people,
   onClose,
 }: {
   state: LooseState;
   channelId: string;
   rootId: string;
+  people: User[];
   onClose: () => void;
 }) {
+  const mentionables = useMemo(() => people.map((p) => ({ id: p.id, name: p.displayName })), [people]);
+  const mentionNames = useMemo(() => people.map((p) => p.displayName), [people]);
   const data = state.getChannelData(channelId);
   const messages: UiMessage[] = data?.messages ?? [];
   const reactions: Reaction[] = data?.reactions ?? [];
@@ -43,6 +48,8 @@ export function ThreadPanel({
             message={root}
             reactions={reactionsFor(root.id)}
             meId={state.me.id}
+            meName={state.me.displayName}
+            mentionNames={mentionNames}
             replyCount={0}
             onToggleReaction={(mid, emoji) => state.toggleReaction(channelId, mid, emoji)}
             onEdit={(mid, body) => state.editMessage(channelId, mid, body)}
@@ -58,6 +65,8 @@ export function ThreadPanel({
             message={m}
             reactions={reactionsFor(m.id)}
             meId={state.me.id}
+            meName={state.me.displayName}
+            mentionNames={mentionNames}
             replyCount={0}
             onToggleReaction={(mid, emoji) => state.toggleReaction(channelId, mid, emoji)}
             onEdit={(mid, body) => state.editMessage(channelId, mid, body)}
@@ -70,6 +79,7 @@ export function ThreadPanel({
       </div>
       <Composer
         placeholder="Reply…"
+        people={mentionables}
         onSend={(body) => state.sendMessage(channelId, body, rootId)}
         onTyping={() => state.typingIn(channelId)}
         onAttach={(file) => state.uploadFile(channelId, file)}

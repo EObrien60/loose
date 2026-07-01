@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { IoHeadsetOutline, IoLockClosed } from "react-icons/io5";
-import type { Channel, Message, Reaction } from "@loose/core";
+import type { Channel, Message, Reaction, User } from "@loose/core";
 import type { LooseState, UiMessage } from "../state";
 import { api } from "../lib/api";
 import { relativeTime } from "../lib/util";
@@ -12,12 +12,16 @@ import { HuddlePanel } from "./HuddlePanel";
 export function ChannelView({
   state,
   channel,
+  people,
   onOpenThread,
 }: {
   state: LooseState;
   channel: Channel;
+  people: User[];
   onOpenThread: (rootId: string) => void;
 }) {
+  const mentionables = useMemo(() => people.map((p) => ({ id: p.id, name: p.displayName })), [people]);
+  const mentionNames = useMemo(() => people.map((p) => p.displayName), [people]);
   const data = state.getChannelData(channel.id);
   const messages: UiMessage[] = data?.messages ?? [];
   const reactions: Reaction[] = data?.reactions ?? [];
@@ -232,6 +236,8 @@ export function ChannelView({
               message={m}
               reactions={reactionsFor(m.id)}
               meId={state.me.id}
+              meName={state.me.displayName}
+              mentionNames={mentionNames}
               replyCount={m.replyCount ?? replyCounts[m.id] ?? 0}
               onToggleReaction={(mid, emoji) => state.toggleReaction(channel.id, mid, emoji)}
               onOpenThread={onOpenThread}
@@ -253,6 +259,7 @@ export function ChannelView({
 
       <Composer
         placeholder={isDm ? `Message ${channel.name}` : `Message #${channel.name}`}
+        people={mentionables}
         onSend={(body) => state.sendMessage(channel.id, body)}
         onTyping={() => state.typingIn(channel.id)}
         onAttach={(file) => state.uploadFile(channel.id, file)}
