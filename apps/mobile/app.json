@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "Loose",
+    "slug": "loose-mobile",
+    "version": "0.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "platforms": ["ios", "android"],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "io.triplebolt.loose"
+    }
+  }
+}

@@ -1,0 +1,3 @@
+# @loose/mobile
+
+Expo / React Native client for Loose (Phase 2). Run it with `pnpm --filter @loose/mobile start`, then scan the QR code with the Expo Go app on your phone. Because the device talks to your dev machine over the LAN, point the client at your machine's LAN IP by exporting `EXPO_PUBLIC_HTTP_URL` (e.g. `http://192.168.1.20:8787`) and `EXPO_PUBLIC_WS_URL` (e.g. `ws://192.168.1.20:8787/ws`) before starting — `localhost` defaults only work in a simulator on the same machine. The v1 scope is auth (login/register), a channel list from `auth.ok`, and a channel view with live messages over the WebSocket and optimistic send. The session token is held in memory only (no secure storage yet).
