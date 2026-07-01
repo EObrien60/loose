@@ -1,0 +1,34 @@
+{
+  "name": "@loose/desktop",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Electron desktop shell wrapping the Loose web client",
+  "main": "dist/main.js",
+  "scripts": {
+    "dev": "pnpm run build && ELECTRON_DEV=1 electron .",
+    "build": "esbuild src/main.ts src/preload.ts --bundle --platform=node --target=node20 --external:electron --outdir=dist --format=cjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "electron": "^33.2.1",
+    "esbuild": "^0.24.2",
+    "typescript": "^5.7.2"
+  },
+  "build": {
+    "appId": "io.triplebolt.loose",
+    "productName": "Loose",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "../web/dist",
+        "to": "web"
+      }
+    ]
+  }
+}
