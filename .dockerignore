@@ -1,0 +1,9 @@
+**/node_modules
+**/dist
+**/.loosedb
+**/.loose-files
+**/.turbo
+.git
+tests/ui/**/test-results
+playwright-report
+*.log
