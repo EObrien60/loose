@@ -39,14 +39,18 @@ export function Workspace({
     };
   }, [token]);
 
-  // auto-select first channel once channels load
+  // auto-select first channel once channels load.
+  // Depend on the specific values used (channels + the stable focusChannel callback)
+  // rather than the whole `state` object, which is a fresh reference every render.
+  const channels = state.channels;
+  const focusChannel = state.focusChannel;
   useEffect(() => {
-    if (!activeId && state.channels.length > 0) {
-      const first = state.channels[0];
+    if (!activeId && channels.length > 0) {
+      const first = channels[0];
       setActiveId(first.id);
-      state.focusChannel(first.id);
+      focusChannel(first.id);
     }
-  }, [activeId, state]);
+  }, [activeId, channels, focusChannel]);
 
   function select(channelId: string) {
     setActiveId(channelId);

@@ -85,10 +85,15 @@ export function ChannelView({
     if (el.scrollTop < 60) requestOlder();
   }
 
-  // mark read when viewing / new messages arrive
+  // mark read when viewing / new messages arrive.
+  // Depend on the *stable* markRead callback — not the whole `state` object, which
+  // useLoose returns fresh every render. Depending on `state` re-ran this effect on
+  // every render, and each run's read.updated broadcast triggered another render,
+  // creating a channel.read flood that tripped the server's WS rate limit.
+  const markRead = state.markRead;
   useEffect(() => {
-    state.markRead(channel.id);
-  }, [channel.id, timeline.length, state]);
+    markRead(channel.id);
+  }, [channel.id, timeline.length, markRead]);
 
   const reactionsFor = (id: string) => reactions.filter((r) => r.messageId === id);
 

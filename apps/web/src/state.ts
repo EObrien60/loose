@@ -223,7 +223,10 @@ export function useLoose(sessionToken: string, initialUser: User): LooseState {
         }
         case "read.updated": {
           if (m.userId === me.id) {
-            setReads((prev) => ({ ...prev, [m.channelId]: m.at }));
+            // Bail if unchanged so an echoed read receipt doesn't force a re-render.
+            setReads((prev) =>
+              prev[m.channelId] === m.at ? prev : { ...prev, [m.channelId]: m.at },
+            );
           }
           break;
         }
