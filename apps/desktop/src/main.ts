@@ -9,10 +9,18 @@ const isDev = !app.isPackaged || process.env.ELECTRON_DEV === "1";
 const DEV_SERVER_URL = "http://localhost:5173";
 
 function createWindow(): void {
+  const isMac = process.platform === "darwin";
   const win = new BrowserWindow({
-    width: 1200,
-    height: 800,
+    width: 1240,
+    height: 820,
+    minWidth: 720,
+    minHeight: 480,
     title: "Loose",
+    backgroundColor: "#1a1b1e",
+    // Native macOS chrome: hide the title bar and float the traffic lights over
+    // the app's own drag strip (see the -webkit-app-region rules in styles.css).
+    titleBarStyle: isMac ? "hiddenInset" : "default",
+    trafficLightPosition: isMac ? { x: 14, y: 18 } : undefined,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -23,7 +31,6 @@ function createWindow(): void {
 
   if (isDev) {
     void win.loadURL(DEV_SERVER_URL);
-    win.webContents.openDevTools({ mode: "detach" });
   } else {
     // Compiled main lives in apps/desktop/dist; the web build is at apps/web/dist.
     const indexHtml = path.join(__dirname, "..", "..", "web", "dist", "index.html");
