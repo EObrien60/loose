@@ -63,6 +63,12 @@ export function App() {
   }
 
   return (
-    <Workspace key={session.token} user={session.user} token={session.token} onLogout={logout} />
+    <Workspace
+      key={session.token}
+      user={session.user}
+      token={session.token}
+      onLogout={logout}
+      onUserChange={(user) => setSession((s) => (s ? { ...s, user } : s))}
+    />
   );
 }

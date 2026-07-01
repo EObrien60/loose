@@ -1,9 +1,8 @@
-import { useState } from "react";
-import { IoSettingsOutline, IoAdd, IoLockClosed, IoClose } from "react-icons/io5";
+import { IoSettingsOutline, IoAdd, IoLockClosed } from "react-icons/io5";
 import type { User, Channel } from "@loose/core";
-import { api, type WorkspaceInfo, type WorkspaceRole } from "../lib/api";
+import { api, type WorkspaceInfo } from "../lib/api";
 import type { LooseState } from "../state";
-import { AdminPanel } from "./AdminPanel";
+import type { SettingsTab } from "./Settings";
 
 function channelLabel(c: Channel, me: User, dmNames: Record<string, string>): string {
   if (c.kind === "dm") return dmNames[c.id] ?? c.name ?? "Direct message";
@@ -16,20 +15,18 @@ export function Sidebar({
   onSelect,
   onLogout,
   workspace,
-  role,
+  onOpenSettings,
+  onOpenDirectory,
 }: {
   state: LooseState;
   activeId: string | null;
   onSelect: (channelId: string) => void;
   onLogout: () => void;
   workspace: WorkspaceInfo | null;
-  role: WorkspaceRole | null;
+  onOpenSettings: (tab: SettingsTab) => void;
+  onOpenDirectory: () => void;
 }) {
-  const { me, channels, online, reads, latest } = state;
-  const [showDmPicker, setShowDmPicker] = useState(false);
-  const [showAdmin, setShowAdmin] = useState(false);
-  const [users, setUsers] = useState<User[] | null>(null);
-  const [usersErr, setUsersErr] = useState<string | null>(null);
+  const { me, channels, reads, latest } = state;
 
   const rooms = channels.filter((c) => c.kind === "public" || c.kind === "private");
   const dms = channels.filter((c) => c.kind === "dm");
@@ -59,29 +56,6 @@ export function Sidebar({
     }
   }
 
-  async function openDmPicker() {
-    setShowDmPicker(true);
-    if (!users) {
-      try {
-        const res = await api.users();
-        setUsers(res.users.filter((u) => u.id !== me.id));
-      } catch (e) {
-        setUsersErr(e instanceof Error ? e.message : "Failed to load users");
-      }
-    }
-  }
-
-  async function startDm(userId: string) {
-    try {
-      const { channel } = await api.createDm(userId);
-      state.addChannel(channel);
-      setShowDmPicker(false);
-      onSelect(channel.id);
-    } catch (e) {
-      window.alert(e instanceof Error ? e.message : "Failed to start DM");
-    }
-  }
-
   return (
     <aside className="sidebar">
       <div className="ws-head">
@@ -95,7 +69,7 @@ export function Sidebar({
           <button
             className="icon-btn ws-gear"
             title="Workspace settings"
-            onClick={() => setShowAdmin(true)}
+            onClick={() => onOpenSettings("general")}
           >
             <IoSettingsOutline />
           </button>
@@ -128,7 +102,7 @@ export function Sidebar({
         <div className="section">
           <div className="section-head">
             <span>Direct Messages</span>
-            <button className="icon-btn" title="New DM" onClick={openDmPicker}>
+            <button className="icon-btn" title="Browse directory" onClick={onOpenDirectory}>
               <IoAdd />
             </button>
           </div>
@@ -147,41 +121,18 @@ export function Sidebar({
       </div>
 
       <div className="me-bar">
-        <span className="presence-dot online" />
-        <span className="me-name">{me.displayName}</span>
+        <button
+          className="me-identity"
+          title="Account settings"
+          onClick={() => onOpenSettings("profile")}
+        >
+          <span className="presence-dot online" />
+          <span className="me-name">{me.displayName}</span>
+        </button>
         <button className="link-btn" onClick={onLogout}>
           Log out
         </button>
       </div>
-
-      {showAdmin && workspace && role && (
-        <AdminPanel workspace={workspace} role={role} onClose={() => setShowAdmin(false)} />
-      )}
-
-      {showDmPicker && (
-        <div className="modal-overlay" onClick={() => setShowDmPicker(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-head">
-              <strong>Start a direct message</strong>
-              <button className="icon-btn" onClick={() => setShowDmPicker(false)}>
-                <IoClose />
-              </button>
-            </div>
-            {usersErr && <div className="auth-error">{usersErr}</div>}
-            {!users && !usersErr && <div className="empty-hint">Loading…</div>}
-            <div className="user-list">
-              {users?.map((u) => (
-                <button key={u.id} className="user-row" onClick={() => startDm(u.id)}>
-                  <span className={`presence-dot ${online.has(u.id) ? "online" : ""}`} />
-                  <span>{u.displayName}</span>
-                  {u.kind !== "human" && <span className="badge">{u.kind}</span>}
-                </button>
-              ))}
-              {users && users.length === 0 && <div className="empty-hint">No other users</div>}
-            </div>
-          </div>
-        </div>
-      )}
     </aside>
   );
 }

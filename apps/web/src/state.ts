@@ -91,7 +91,9 @@ function mergeReactions(existing: Reaction[], incoming: Reaction[]): Reaction[] 
 }
 
 export function useLoose(sessionToken: string, initialUser: User): LooseState {
-  const [me] = useState(initialUser);
+  const [me, setMe] = useState(initialUser);
+  // Keep `me` in sync when the parent updates the user (e.g. profile rename in Settings).
+  useEffect(() => setMe(initialUser), [initialUser]);
   const [channels, setChannels] = useState<Channel[]>([]);
   const [online, setOnline] = useState<Set<string>>(new Set());
   const [reads, setReads] = useState<Record<string, number>>({});
